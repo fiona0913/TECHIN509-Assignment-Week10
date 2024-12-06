@@ -1,27 +1,32 @@
 class Board:
     def __init__(self):
+        # 初始化 3x3 棋盘，所有格子初始为空格
         self.grid = [[" " for _ in range(3)] for _ in range(3)]
 
     def draw_board(self):
         """
-        Draw the board of Tic-Tac-Toe game
+        Draw the board of Tic-Tac-Toe game with appropriate borders.
         """
-        for i, row in enumerate(self.grid):
-            print("|".join(row))
-            if i < len(self.grid) - 1:
-                print("-" * 5)
+        size = len(self.grid)  # 获取棋盘大小
+        for i in range(size):
+            # 打印分隔线
+            print(" ---" * size)
+            # 打印每行内容，添加边框
+            print("| " + " | ".join(self.grid[i]) + " |")
+        # 打印最后一条分隔线
+        print(" ---" * size)
 
     def update_board(self, row: int, col: int, symbol: str) -> bool:
         """
         Update the game board based on location selected by player.
 
         Args:
-            row (int): Row index of board
-            col (int): Column index of board
-            symbol (str): Symbol used by player ('X' or 'O')
+            row (int): Row index of the board.
+            col (int): Column index of the board.
+            symbol (str): Symbol used by the player ('X' or 'O').
 
         Returns:
-            bool: True if the cell is updated, False if the cell is already occupied.
+            bool: True if the cell is updated successfully, False otherwise.
         """
         if self.grid[row][col] == " ":
             self.grid[row][col] = symbol
@@ -33,32 +38,22 @@ class Board:
         Check the winner of the current board.
 
         Returns:
-            str: The winning symbol ('X' or 'O') if there is a winner,
-                 'Draw' if the game is tied, or 'ongoing' if the game is not yet finished.
+            str: The winning symbol ('X' or 'O') if there is a winner, else an empty string.
         """
-        # Check rows for a winner
-        for row in self.grid:
-            if row[0] == row[1] == row[2] and row[0] != " ":
-                return row[0]
+        # Check rows and columns
+        for i in range(3):
+            if self.grid[i][0] == self.grid[i][1] == self.grid[i][2] != " ":
+                return self.grid[i][0]  # Row winner
+            if self.grid[0][i] == self.grid[1][i] == self.grid[2][i] != " ":
+                return self.grid[0][i]  # Column winner
 
-        # Check columns for a winner
-        for col in range(3):
-            if self.grid[0][col] == self.grid[1][col] == self.grid[2][col] and self.grid[0][col] != " ":
-                return self.grid[0][col]
+        # Check diagonals
+        if self.grid[0][0] == self.grid[1][1] == self.grid[2][2] != " ":
+            return self.grid[0][0]  # Main diagonal winner
+        if self.grid[0][2] == self.grid[1][1] == self.grid[2][0] != " ":
+            return self.grid[0][2]  # Anti-diagonal winner
 
-        # Check diagonals for a winner
-        if self.grid[0][0] == self.grid[1][1] == self.grid[2][2] and self.grid[0][0] != " ":
-            return self.grid[0][0]
-        if self.grid[0][2] == self.grid[1][1] == self.grid[2][0] and self.grid[0][2] != " ":
-            return self.grid[0][2]
-
-        # Check if there are empty cells (game is ongoing)
-        for row in self.grid:
-            if " " in row:
-                return "ongoing"
-
-        # If no winner and no empty cells, it's a draw
-        return "Draw"
+        return ""  # No winner
 
     def is_full(self) -> bool:
         """
@@ -68,22 +63,3 @@ class Board:
             bool: True if the board is full, False otherwise.
         """
         return all(cell != " " for row in self.grid for cell in row)
-
-
-# Example usage
-board = Board()
-board.update_board(0, 0, "X")
-board.update_board(0, 1, "X")
-board.update_board(0, 2, "X")
-board.draw_board()
-
-result = board.check_winner()
-
-if result == "X":
-    print("X Won")
-elif result == "O":
-    print("O Won")
-elif result == "Draw":
-    print("Draw")
-elif result == "ongoing":
-    print("Ongoing")
